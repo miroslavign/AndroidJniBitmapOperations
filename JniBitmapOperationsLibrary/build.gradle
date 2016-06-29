@@ -1,11 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle-experimental:0.7.0-alpha4"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
 apply plugin: 'com.android.library'
 
 version '0.0.1'
 group 'com.jni.bitmap_operations'
 
 android {
-    compileSdkVersion propCompileSdkVersion
-    buildToolsVersion propBuildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     sourceSets {
         main {
@@ -26,30 +38,4 @@ android {
             stl "stlport_shared"
         }
     }
-
-
-
-/*
-    task buildNative(type: Exec, description: 'Compile JNI source via NDK') {
-        def ndkDir = android.plugin.ndkFolder
-        commandLine "$ndkDir/ndk-build",
-                '-C', file('jni').absolutePath,
-                '-j', Runtime.runtime.availableProcessors(),
-                'all',
-                'NDK_DEBUG=1'
-    }
-
-    task cleanNative(type: Exec, description: 'Clean JNI object files') {
-        def ndkDir = android.plugin.ndkFolder
-        commandLine "$ndkDir/ndk-build",
-                '-C', file('jni').absolutePath,
-                'clean'
-    }
-
-    clean.dependsOn 'cleanNative'
-
-    tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn buildNative
-    }
-    */
 }
