@@ -1,31 +1,28 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+//task wrapper(type: Wrapper) {
+//    gradleVersion = '2.2'
+//}
+
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle-experimental:0.8.0-alpha4'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
-apply plugin: "com.android.model.library"
-
-version '0.0.1'
-group 'com.jni.bitmap_operations'
-
-repositories {
-    jcenter()
-}
-model {
-    android {
-        compileSdkVersion rootProject.ext.compileSdkVersion
-        buildToolsVersion rootProject.ext.buildToolsVersion
-
-        ndk {
-            moduleName "JniBitmapOperationsLibrary"
-            ldLibs.add("log")
-            ldLibs.add("jnigraphics")
-            CFlags.add("-DANDROID_NDK_HOME")
-            stl "stlport_shared"
-        }
+allprojects {
+    repositories {
+        jcenter()
     }
+}
+
+ext {
+    compileSdkVersion = 24
+    buildToolsVersion = "24.0.0"
 }
