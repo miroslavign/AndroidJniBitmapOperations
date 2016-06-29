@@ -80,6 +80,34 @@
             android:layout_height="wrap_content"
             tools:ignore="ContentDescription" />
 
+        <!-- flipped horizontally -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="flipped horizontally"
+            tools:ignore="HardcodedText" />
+
+        <ImageView
+            android:id="@+id/imageViewFlippedHorizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="ContentDescription" />
+
+        <!-- flipped vertically -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="flipped vertically"
+            tools:ignore="HardcodedText" />
+
+        <ImageView
+            android:id="@+id/imageViewFlippedVertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="ContentDescription" />
+
         <!-- scaled using nearest neighbour -->
 
         <TextView
