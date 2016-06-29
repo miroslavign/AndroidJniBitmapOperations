@@ -1,32 +1,31 @@
-apply plugin: 'com.android.library'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle-experimental:0.8.0-alpha4'
+    }
+}
+
+apply plugin: "com.android.model.library"
 
 version '0.0.1'
 group 'com.jni.bitmap_operations'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
+model {
+    android {
+        compileSdkVersion rootProject.ext.compileSdkVersion
+        buildToolsVersion rootProject.ext.buildToolsVersion
 
-android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            jni.srcDirs = ['jni']
-        }
-    }
-
-    defaultConfig {
         ndk {
             moduleName "JniBitmapOperationsLibrary"
-            ldLibs "log", "jnigraphics"
+            ldLibs.add("log")
+            ldLibs.add("jnigraphics")
+            CFlags.add("-DANDROID_NDK_HOME")
+            stl "stlport_shared"
         }
     }
-
 }
