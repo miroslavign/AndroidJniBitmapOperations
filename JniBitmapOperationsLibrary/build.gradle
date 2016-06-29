@@ -3,13 +3,9 @@ apply plugin: 'com.android.library'
 version '0.0.1'
 group 'com.jni.bitmap_operations'
 
-repositories {
-    mavenCentral()
-}
-
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion propCompileSdkVersion
+    buildToolsVersion propBuildToolsVersion
 
     sourceSets {
         main {
@@ -26,7 +22,34 @@ android {
         ndk {
             moduleName "JniBitmapOperationsLibrary"
             ldLibs "log", "jnigraphics"
+            cFlags "-DANDROID_NDK_HOME"
+            stl "stlport_shared"
         }
     }
 
+
+
+/*
+    task buildNative(type: Exec, description: 'Compile JNI source via NDK') {
+        def ndkDir = android.plugin.ndkFolder
+        commandLine "$ndkDir/ndk-build",
+                '-C', file('jni').absolutePath,
+                '-j', Runtime.runtime.availableProcessors(),
+                'all',
+                'NDK_DEBUG=1'
+    }
+
+    task cleanNative(type: Exec, description: 'Clean JNI object files') {
+        def ndkDir = android.plugin.ndkFolder
+        commandLine "$ndkDir/ndk-build",
+                '-C', file('jni').absolutePath,
+                'clean'
+    }
+
+    clean.dependsOn 'cleanNative'
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn buildNative
+    }
+    */
 }

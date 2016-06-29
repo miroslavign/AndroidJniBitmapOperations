@@ -12,37 +12,43 @@
 
 extern "C"
     {
-    //store
+//store
     JNIEXPORT jobject JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniStoreBitmapData(
 	    JNIEnv * env, jobject obj, jobject bitmap);
-    //get
+//get
     JNIEXPORT jobject JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniGetBitmapFromStoredBitmapData(
 	    JNIEnv * env, jobject obj, jobject handle);
-    //free
+//free
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFreeBitmapData(
 	    JNIEnv * env, jobject obj, jobject handle);
-    //rotate 90 degrees CCW
+//rotate 90 degrees CCW
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniRotateBitmapCcw90(
 	    JNIEnv * env, jobject obj, jobject handle);
-    //rotate 90 degrees CW
+//rotate 90 degrees CW
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniRotateBitmapCw90(
 	    JNIEnv * env, jobject obj, jobject handle);
-    //rotate 180 degrees
+//rotate 180 degrees
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniRotateBitmap180(
 	    JNIEnv * env, jobject obj, jobject handle);
-    //crop
+//crop
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniCropBitmap(
 	    JNIEnv * env, jobject obj, jobject handle, uint32_t left,
 	    uint32_t top, uint32_t right, uint32_t bottom);
-    //scale using nearest neighbor
+//scale using nearest neighbor
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniScaleNNBitmap(
 	    JNIEnv * env, jobject obj, jobject handle, uint32_t newWidth,
 	    uint32_t newHeight);
 
-    //scale using Bilinear Interpolation
+//scale using Bilinear Interpolation
     JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniScaleBIBitmap(
 	    JNIEnv * env, jobject obj, jobject handle, uint32_t newWidth,
 	    uint32_t newHeight);
+
+    JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFlipBitmapHorizontal(
+	    JNIEnv * env, jobject obj, jobject handle);
+
+    JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFlipBitmapVertical(
+	    JNIEnv * env, jobject obj, jobject handle);
     }
 
 class JniBitmap
@@ -200,7 +206,7 @@ JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniRotate
 	}
     }
 
-/**free bitmap*/  //
+/**free bitmap*/ //
 JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFreeBitmapData(
 	JNIEnv * env, jobject obj, jobject handle)
     {
@@ -212,7 +218,7 @@ JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFreeBi
     delete jniBitmap;
     }
 
-/**restore java bitmap (from JNI data)*/  //
+/**restore java bitmap (from JNI data)*/ //
 JNIEXPORT jobject JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniGetBitmapFromStoredBitmapData(
 	JNIEnv * env, jobject obj, jobject handle)
     {
@@ -259,7 +265,7 @@ JNIEXPORT jobject JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniGet
     return newBitmap;
     }
 
-/**store java bitmap as JNI data*/  //
+/**store java bitmap as JNI data*/ //
 JNIEXPORT jobject JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniStoreBitmapData(
 	JNIEnv * env, jobject obj, jobject bitmap)
     {
@@ -467,4 +473,68 @@ JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniScaleB
     jniBitmap->_storedBitmapPixels = newBitmapPixels;
     jniBitmap->_bitmapInfo.width = newWidth;
     jniBitmap->_bitmapInfo.height = newHeight;
+    }
+
+/**flips a bitmap horizontally, as such:
+ *
+ * 123    321
+ * 456 => 654
+ * 789    987
+ *
+ * */ //
+JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFlipBitmapHorizontal(
+	JNIEnv * env, jobject obj, jobject handle)
+    {
+    JniBitmap* jniBitmap = (JniBitmap*) env->GetDirectBufferAddress(handle);
+    if (jniBitmap->_storedBitmapPixels == NULL)
+	return;
+    uint32_t* previousData = jniBitmap->_storedBitmapPixels;
+    int width = jniBitmap->_bitmapInfo.width, middle = width / 2, height =
+	    jniBitmap->_bitmapInfo.height;
+    for (int y = 0; y < height; ++y)
+	{
+	//for each row, switch between the first pixels and the last ones
+	uint32_t* idx1 = previousData + width * y;
+	uint32_t* idx2 = previousData + width * (y + 1) - 1;
+	for (int x = 0; x < middle; ++x)
+	    {
+	    uint32_t pixel = *idx1; //pixel= previousData[rowStart + x];
+	    *idx1 = *idx2; //previousData[rowStart + x] =previousData[rowStart + (width - x - 1)];
+	    *idx2 = pixel; //previousData[rowStart + (width - x - 1)] = pixel;
+	    ++idx1;
+	    --idx2;
+	    }
+	}
+    }
+
+/**flips a bitmap vertically, as such:
+ *
+ * 123    789
+ * 456 => 456
+ * 789    123
+ *
+ * */ //
+JNIEXPORT void JNICALL Java_com_jni_bitmap_1operations_JniBitmapHolder_jniFlipBitmapVertical(
+	JNIEnv * env, jobject obj, jobject handle)
+    {
+    JniBitmap* jniBitmap = (JniBitmap*) env->GetDirectBufferAddress(handle);
+    if (jniBitmap->_storedBitmapPixels == NULL)
+	return;
+    uint32_t* previousData = jniBitmap->_storedBitmapPixels;
+    int width = jniBitmap->_bitmapInfo.width, height =
+	    jniBitmap->_bitmapInfo.height, middle = height / 2;
+    for (int y = 0; y < middle; ++y)
+	{
+	//for each row till the middle row, switch its pixels with the one at the bottom
+	uint32_t* idx1 = previousData + width * y;
+	uint32_t* idx2 = previousData + width * (height - y - 1);
+	for (int x = 0; x < width; ++x)
+	    {
+	    uint32_t pixel =*idx1;
+	    *idx1=*idx2;
+	    *idx2=pixel;
+	    ++idx2;
+	    ++idx1;
+	    }
+	}
     }

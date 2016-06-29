@@ -34,6 +34,10 @@ public class JniBitmapHolder
 
   private native void jniScaleBIBitmap(ByteBuffer handler,final int newWidth,final int newHeight);
 
+  private native void jniFlipBitmapHorizontal(ByteBuffer handler);
+
+  private native void jniFlipBitmapVertical(ByteBuffer handler);
+
   public JniBitmapHolder()
     {}
 
@@ -106,6 +110,39 @@ public class JniBitmapHolder
       }
     }
 
+  /**
+   * flips a bitmap horizontally, as such: <br/>
+   *
+   * <pre>
+   * 123    321
+   * 456 => 654
+   * 789    987
+   * </pre>
+   */
+  //
+  public void flipBitmapHorizontal()
+    {
+    if(_handler==null)
+      return;
+    jniFlipBitmapHorizontal(_handler);
+    }
+
+  /**
+   * Flips the bitmap on the vertically, as such:<br/>
+   *
+   * <pre>
+   * 123    789
+   * 456 => 456
+   * 789    123
+   * </pre>
+   */
+  public void flipBitmapVertical()
+    {
+    if(_handler==null)
+      return;
+    jniFlipBitmapVertical(_handler);
+    }
+
   public void freeBitmap()
     {
     if(_handler==null)
@@ -120,7 +157,7 @@ public class JniBitmapHolder
     super.finalize();
     if(_handler==null)
       return;
-    Log.w("DEBUG","JNI bitmap wasn't freed nicely.please rememeber to free the bitmap as soon as you can");
+    Log.w("DEBUG","JNI bitmap wasn't freed nicely.please remember to free the bitmap as soon as you can");
     freeBitmap();
     }
   }
