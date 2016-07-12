@@ -1,14 +1,17 @@
 package com.jni.bitmap_operations;
-import java.nio.ByteBuffer;
+
 import android.graphics.Bitmap;
 import android.util.Log;
+
+import java.nio.ByteBuffer;
 
 public class JniBitmapHolder
   {
   ByteBuffer _handler =null;
   static
     {
-    System.loadLibrary("JniBitmapOperationsLibrary");
+      System.loadLibrary("stlport_shared");
+      System.loadLibrary("JniBitmapOperationsLibrary");
     }
 
   public enum ScaleMethod
